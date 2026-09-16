@@ -7,6 +7,8 @@
 
 面向 [opencode](https://opencode.ai) 的富交互询问技能：把 AI 那个「单调的询问框」换成一个**独立窗口**，能展示预览图、能对比方案、能填表、能走多步流程，用户提交后结构化 JSON 直接回到 AI 上下文里。
 
+> **给 AI 助手**：请直接跳到 [安装清单（AI 助手照做）](#安装清单ai-助手照做)，照那一节执行，不要自己发挥。
+
 ![方案对比与图片预览](docs/preview-1.png)
 
 ---
@@ -43,7 +45,92 @@ AI 要问用户问题时，内置询问框只能给几行纯文字选项。一�
 
 ![深色主题与代码 diff](docs/preview-3.png)
 
-## 安装
+## 安装清单（AI 助手照做）
+
+> **如果你是 AI 助手，照这一节做就行，不要自己发挥。** 人类读者可以跳过。
+>
+> 目标一句话：把整个仓库放到 `<配置目录>/skills/ai-ask-detailed-needs/`，把 `tools/ai-ask-detailed-needs.ts` 放到 `<配置目录>/tools/`，然后让用户重启 OpenCode。
+
+`<配置目录>`：Windows = `%USERPROFILE%\.config\opencode`，macOS / Linux = `~/.config/opencode`。
+
+**要装两处，缺一不可：**
+
+| 内容 | 目标位置 |
+| --- | --- |
+| 整个仓库（`SKILL.md`、`assets/`、`references/` …） | `<配置目录>/skills/ai-ask-detailed-needs/` |
+| `tools/ai-ask-detailed-needs.ts` | `<配置目录>/tools/ai-ask-detailed-needs.ts` |
+
+> ⚠️ **只装 `skills/` 是不生效的。** 那样 AI 能读到技能说明，却调用不到工具 —— 表现为「AI 说它弹了窗口，但用户屏幕上什么都没有」。工具必须落到 `tools/` 下。
+
+### 第 1 步 · 取文件
+
+**有 git：**
+
+```bash
+git clone https://github.com/LuYanghao-whaat/ai-ask-detailed-needs "<配置目录>/skills/ai-ask-detailed-needs"
+```
+
+**没有 git，用 zip：**
+
+1. 下载 <https://codeload.github.com/LuYanghao-whaat/ai-ask-detailed-needs/zip/refs/heads/main>
+2. 解压（Windows 用 `Expand-Archive`，macOS / Linux 用 `unzip`），得到 `ai-ask-detailed-needs-main/`
+3. 把这个目录整体移动到 `<配置目录>/skills/ai-ask-detailed-needs`
+
+**连解压工具都没有**，就逐个下载下面 12 个文件（路径相对仓库根目录，URL 形如
+`https://raw.githubusercontent.com/LuYanghao-whaat/ai-ask-detailed-needs/main/<路径>`）：
+
+```
+.gitignore        LICENSE            README.md          SKILL.md
+install.ps1       install.sh
+assets/ui.html
+docs/preview-1.png  docs/preview-2.png  docs/preview-3.png
+references/spec.md
+tools/ai-ask-detailed-needs.ts
+```
+
+### 第 2 步 · 装工具（不能省）
+
+```powershell
+# Windows
+powershell -ExecutionPolicy Bypass -File "<配置目录>\skills\ai-ask-detailed-needs\install.ps1"
+```
+
+```bash
+# macOS / Linux
+bash "<配置目录>/skills/ai-ask-detailed-needs/install.sh"
+```
+
+也可以手工复制这一个文件：
+
+```
+<配置目录>/skills/ai-ask-detailed-needs/tools/ai-ask-detailed-needs.ts
+        ↓
+<配置目录>/tools/ai-ask-detailed-needs.ts
+```
+
+### 第 3 步 · 验证
+
+这两个文件必须都存在，缺任何一个都算没装好：
+
+- `<配置目录>/skills/ai-ask-detailed-needs/SKILL.md`
+- `<配置目录>/tools/ai-ask-detailed-needs.ts`
+
+顺带确认界面文件也在：`<配置目录>/skills/ai-ask-detailed-needs/assets/ui.html`。
+
+### 第 4 步 · 重启
+
+告诉用户**重启 OpenCode**。技能和工具只在启动时加载，不重启不生效。
+
+### 注意事项
+
+- 这些文件含中文，**必须按 UTF-8 原样保存**。不要用 PowerShell 的 `Get-Content` / `Set-Content` 搬运文件内容（中文会乱码），用 `Copy-Item`、`cp`，或直接写文件。
+- 不要顺手 `git init`，也不要在配置目录里跑包管理器。
+- 只动上面这两个位置，不要改用户已有的技能和工具。
+- 装完可自检：让用户双击 `assets/ui.html`，能看到演示界面就说明文件完整。
+
+---
+
+## 安装（人类读者）
 
 > 需要 [opencode](https://opencode.ai)。**不需要 Python、Node 或任何其它运行时** —— 窗口由 opencode 自带运行时提供，用系统已有的 Edge / Chrome 显示。
 
