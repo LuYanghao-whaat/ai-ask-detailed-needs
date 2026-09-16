@@ -50,7 +50,7 @@ AI 要问用户问题时，内置询问框只能给几行纯文字选项。一�
 ### Windows
 
 ```powershell
-git clone https://github.com/YOUR_GITHUB_NAME/ai-ask-detailed-needs "$env:USERPROFILE\.config\opencode\skills\ai-ask-detailed-needs"
+git clone https://github.com/LuYanghao-whaat/ai-ask-detailed-needs "$env:USERPROFILE\.config\opencode\skills\ai-ask-detailed-needs"
 cd "$env:USERPROFILE\.config\opencode\skills\ai-ask-detailed-needs"
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
@@ -60,7 +60,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 ### macOS / Linux
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_NAME/ai-ask-detailed-needs ~/.config/opencode/skills/ai-ask-detailed-needs
+git clone https://github.com/LuYanghao-whaat/ai-ask-detailed-needs ~/.config/opencode/skills/ai-ask-detailed-needs
 cd ~/.config/opencode/skills/ai-ask-detailed-needs
 bash install.sh
 ```
