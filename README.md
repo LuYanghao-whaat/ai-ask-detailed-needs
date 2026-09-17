@@ -1,5 +1,7 @@
 # ai-ask-detailed-needs
 
+[![Version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](VERSION)
+
 > **Give your AI a real window to ask you things.**
 > An [opencode](https://opencode.ai) skill + custom tool that replaces the plain question box with a rich, local, zero-dependency interaction window — Markdown, image previews, option cards, forms, drag-to-rank, wizards, tables, code diffs and file previews. The user's answers come back as structured JSON.
 >
@@ -273,3 +275,21 @@ AI 调用工具
 ## 许可
 
 [MIT](LICENSE)
+
+## 版本与更新
+
+版本号在根目录的 [`VERSION`](VERSION) 文件里，同时写进 `SKILL.md` 的 frontmatter。
+
+**AI 会自己检查更新。** 每次会话第一次用到这个技能时，SKILL.md 里的「启动自检」会让 AI：
+
+1. 读本地 `VERSION`
+2. 拉取远程 `VERSION`（短超时，失败就静默跳过，不会卡住对话）
+3. 有新版就问一句「ai-ask-detailed-needs 有新版本（本地 X → 远程 Y），要更新吗？」
+4. 用户同意才下载覆盖；拒绝就继续用当前版本，本次会话不再问
+
+更新时有两件事要注意：
+
+- `tools/ai-ask-detailed-needs.ts` 是**启动时加载**的 —— 改完必须重启 opencode
+- `assets/ui.html` 是**每次弹窗前现读**的 —— 只改界面的话不用重启
+
+维护者改完代码记得同步 `VERSION` 和 `SKILL.md` 里的 `version`，否则更新检查不会触发。
