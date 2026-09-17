@@ -17,8 +17,6 @@
 | `cancelLabel` | string | 取消按钮文字，默认「取消」 |
 | `nextLabel` / `prevLabel` | string | 向导按钮文字 |
 | `allowCancel` | boolean | 默认 `true`；`false` 时不显示取消 |
-| `cancelConfirm` | boolean \| string | 默认 `true`：点「取消」时先弹确认框（防误触）。`false` 直接取消；传字符串可自定义提示文字 |
-| `howto` | boolean | 默认 `true`：页面顶部显示「这是 AI 在向你提问」的说明条。用户点 ✕ 关掉后会记住（localStorage），以后不再出现；设 `false` 则从不显示 |
 | `theme` | `"auto"\|"light"\|"dark"` | 默认 `auto`（跟随系统） |
 | `wide` | boolean | 用更宽的三栏布局，适合多图并排 |
 | `density` | `"comfortable"\|"compact"` | 默认 `comfortable` |
@@ -32,7 +30,7 @@
 | 字段 | 说明 |
 | --- | --- |
 | `type` | **必填**，见下表 |
-| `id` | 交互块建议给：结果 JSON 的 key。展示块可省 |
+| `id` | 交互块的结果 key。**忘了写也没关系**：会自动命名成 `q1` / `q2`（正好对应界面上的 Q1 / Q2），并在结果的 `warnings` 里提醒你。建议还是写有意义的名字 |
 | `prompt` / `title` | 块标题 |
 | `description` | 块说明（纯文本） |
 | `card` | `false` 时去掉白底卡片 |
@@ -219,6 +217,8 @@
 | 展示类块 | 不出现 |
 
 `unanswered` 列出必填但没填的 `id`（`timeout` 时按 `partial` 计算）。
+
+如果 spec 里有交互块漏写 `id`，工具会自动补成 `q1` / `q2`（与界面上的 Q 编号一致），并在 `warnings` 里列出来。
 
 ## 常用配方
 
