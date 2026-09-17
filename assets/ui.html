@@ -355,6 +355,7 @@ table.tbl td code{font-family:var(--mono);font-size:13px;background:var(--panel-
 .ov-box .kv .row{display:flex;gap:10px;padding:3px 0}
 .ov-box .kv .row .k{color:var(--muted);flex:none;min-width:88px}
 .ov-box .kv .row .v{color:var(--text-2);font-family:var(--mono);font-size:12px;word-break:break-all;flex:1}
+.ov-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 
 .toast{position:fixed;left:50%;bottom:86px;transform:translate(-50%,14px);z-index:80;padding:10px 18px;border-radius:99px;
   background:var(--text);color:var(--bg);font-size:13px;font-weight:600;box-shadow:var(--shadow-l);opacity:0;pointer-events:none;transition:.25s}
@@ -414,6 +415,7 @@ table.tbl td code{font-family:var(--mono);font-size:13px;background:var(--panel-
 </footer>
 <div class="lightbox" id="lightbox"><img id="lbImg" alt=""><div class="cap" id="lbCap"></div></div>
 <div class="overlay" id="overlay"><div class="ov-box" id="ovBox"></div></div>
+<div class="overlay" id="confirmBox"><div class="ov-box" id="confirmInner"></div></div>
 <div class="toast" id="toast"></div>
 <script id="ask-spec" type="application/json">__ASK_SPEC__</script>
 <script id="ask-runtime" type="application/json">__ASK_RUNTIME__</script>
@@ -1021,9 +1023,11 @@ renderers.table=function(b,host){
     tbody.appendChild(row);
   });
   tb.appendChild(tbody);tw.appendChild(tb);wrap.appendChild(tw);host.appendChild(wrap);
-  b.__get=function(){return selMode==="single"?(selected[0]===undefined?null:selected[0]):(selMode==="none"?null:selected.slice())};
-  b.__check=function(){if(b.required&&selMode!=="none"&&!selected.length){toast("请至少选择一行");return false}return true};
-  b.__set=function(v){};
+  if(selMode!=="none"){
+    b.__get=function(){return selMode==="single"?(selected[0]===undefined?null:selected[0]):selected.slice()};
+    b.__check=function(){if(b.required&&!selected.length){toast("请至少选择一行");return false}return true};
+    b.__set=function(v){};
+  }
 };
 
 var LANGS={js:"javascript",javascript:"javascript",ts:"typescript",typescript:"typescript",py:"python",python:"python",json:"json",html:"html",css:"css",sh:"bash",bash:"bash",ps:"powershell",powershell:"powershell",sql:"sql",go:"go",rs:"rust",rust:"rust",java:"java",c:"c",cpp:"cpp","c++":"cpp",yaml:"yaml",yml:"yaml",md:"markdown",markdown:"markdown",tex:"latex",toml:"toml",xml:"xml",ini:"ini",bat:"batch",cmd:"batch"};
@@ -1283,12 +1287,35 @@ function submit(){
     toast("提交失败，请重试");
   });
 }
-function cancel(){
+function doCancel(){
   if(state.submitted)return;
   if(!RT.allowCancel){toast("本次询问不支持取消");return}
   if(!MOCK)post((RT.apiBase||"/api")+"/cancel",{}).catch(function(){});
   finishOverlay("cancelled");
 }
+function cancel(){
+  if(state.submitted)return;
+  if(SPEC.cancelConfirm===false){doCancel();return}
+  if($("confirmBox").classList.contains("on"))return;
+  var msg=(typeof SPEC.cancelConfirm==="string"&&SPEC.cancelConfirm)
+    ?SPEC.cancelConfirm
+    :"如果取消，AI 会按它自己的理解继续完成任务，结果可能达不到你的要求。";
+  var box=$("confirmInner");
+  box.innerHTML="";
+  box.appendChild(el("div","ov-ico",ICONS.warn));
+  box.appendChild(el("h2",null,"确认取消这次询问？"));
+  box.appendChild(el("p",null,msg));
+  var row=el("div","ov-row");
+  var back=el("button","btn primary","继续作答");
+  back.addEventListener("click",function(){$("confirmBox").classList.remove("on")});
+  var quit=el("button","btn ghost","确认取消");
+  quit.addEventListener("click",function(){$("confirmBox").classList.remove("on");doCancel()});
+  row.appendChild(quit);row.appendChild(back);
+  box.appendChild(row);
+  $("confirmBox").classList.add("on");
+  back.focus();
+}
+$("confirmBox").addEventListener("click",function(e){if(e.target===$("confirmBox"))$("confirmBox").classList.remove("on")});
 function ping(){
   if(MOCK||state.submitted)return;
   fetch((RT.apiBase||"/api")+"/ping",{method:"POST",headers:{"content-type":"application/json","x-ask-token":RT.token||""},body:"{}"})
