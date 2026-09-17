@@ -258,9 +258,9 @@ table.tbl td code{font-family:var(--mono);font-size:13px;background:var(--panel-
 .code-head .sp{flex:1}
 .code-body{margin:0;overflow:auto;max-height:560px}
 .code-body code{font-family:var(--mono);font-size:13.3px;line-height:1.7;display:block;padding:14px 0;white-space:pre}
-.code-body .ln{display:block;padding:0 15px}
-.code-body .ln:hover{background:var(--panel-2)}
-.code-body .lnn{display:inline-block;width:3.1em;margin-right:14px;color:var(--muted);opacity:.6;text-align:right;user-select:none}
+.ln{display:block;padding:0 15px}
+.ln:hover{background:var(--panel-2)}
+.lnn{display:inline-block;width:3.1em;margin-right:14px;color:var(--muted);opacity:.6;text-align:right;user-select:none}
 .diff-add{background:color-mix(in srgb,var(--ok) 12%,transparent)}
 .diff-del{background:color-mix(in srgb,var(--danger) 12%,transparent)}
 .diff-add .lnn{color:var(--ok)}
@@ -292,7 +292,7 @@ table.tbl td code{font-family:var(--mono);font-size:13px;background:var(--panel-
 .att .ab{flex:1;min-height:0}
 .att .ab img{display:block;width:100%;max-height:420px;object-fit:contain;background:var(--panel-3);cursor:zoom-in}
 .att .ab iframe{width:100%;height:430px;border:none;background:#fff}
-.att .ab pre{margin:0;max-height:360px;overflow:auto;padding:12px 14px;font-family:var(--mono);font-size:12.4px;line-height:1.6;color:var(--text-2);background:var(--panel)}
+.att .ab pre{margin:0;max-height:360px;overflow:auto;padding:13px 0;font-family:var(--mono);font-size:13.3px;line-height:1.7;color:var(--text-2);background:var(--panel)}
 .att .adsc{padding:9px 13px;font-size:13.2px;color:var(--muted);border-top:1px solid var(--border);background:var(--panel-2)}
 .att .adsc .md{font-size:13.2px;color:var(--muted)}
 .att-loading{padding:22px;text-align:center;color:var(--muted);font-size:13.2px}
@@ -342,6 +342,9 @@ table.tbl td code{font-family:var(--mono);font-size:13px;background:var(--panel-
 .lightbox{position:fixed;inset:0;z-index:90;background:rgba(8,10,14,.9);display:none;align-items:center;justify-content:center;padding:32px;cursor:zoom-out;backdrop-filter:blur(4px)}
 .lightbox.on{display:flex}
 .lightbox img{max-width:100%;max-height:100%;border-radius:var(--radius);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.lightbox .lb-body{width:min(1000px,90vw);max-height:84vh;overflow:auto;background:var(--panel);border-radius:var(--radius);
+  box-shadow:0 30px 80px rgba(0,0,0,.6);padding:22px}
+.lightbox .lb-body svg{width:100%;height:auto;max-height:78vh;display:block}
 .lightbox .cap{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#e6e9ef;font-size:13px}
 
 .overlay{position:fixed;inset:0;z-index:95;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);
@@ -658,7 +661,13 @@ function assetUrl(p){return (RT.assetBase||"/asset")+"?t="+encodeURIComponent(RT
 function imgNode(v,cls){
   var s=srcOf(v);
   if(!s)return null;
-  if(s.kind==="html"){var d=el("div","inline-media"+(cls?" "+cls:""));d.innerHTML=s.html;return d}
+  if(s.kind==="html"){
+    var d=el("div","inline-media"+(cls?" "+cls:""));
+    d.innerHTML=s.html;
+    d.style.cursor="zoom-in";
+    d.addEventListener("click",function(e){e.stopPropagation();openLightbox(s.html,(v&&(v.alt||v.caption))||"",true)});
+    return d;
+  }
   var img=el("img");
   img.loading="lazy";img.src=s.url;
   if(v&&v.alt)img.alt=v.alt;
@@ -1034,20 +1043,23 @@ var LANGS={js:"javascript",javascript:"javascript",ts:"typescript",typescript:"t
 var KEYWORDS={javascript:"const let var function return if else for while class extends new typeof instanceof this async await import from export default try catch finally throw switch case break continue null undefined true false of in delete void yield static get set".split(" "),typescript:"const let var function return if else for while class extends implements interface type enum new typeof instanceof this async await import from export default try catch finally throw switch case break continue null undefined true false of in public private protected readonly static get set as satisfies keyof infer never unknown any".split(" "),python:"def class return if elif else for while import from as with try except finally raise lambda None True False and or not in is pass break continue global nonlocal yield async await del assert".split(" "),json:"true false null".split(" "),bash:"if then else fi for do done while case esac function return echo export local readonly set unset".split(" "),powershell:"function param if else elseif foreach for while return try catch finally throw begin process end filter switch".split(" "),sql:"select from where insert into update delete join left right inner outer on group by order having limit offset union as and or not null values set create table index".split(" "),go:"package import func var const type struct interface map chan go defer return if else for range switch case break continue select nil true false".split(" "),rust:"fn let mut const struct enum impl trait pub use mod match if else for while loop return break continue where as dyn ref move unsafe async await true false Some None Ok Err".split(" "),java:"public private protected class interface extends implements static final void int long double float boolean char String new return if else for while do switch case break continue try catch finally throw import package this super null true false".split(" "),c:"int long short char float double void struct union enum typedef static const unsigned signed return if else for while do switch case break continue goto sizeof".split(" "),cpp:"int long short char float double void struct class union enum typedef static const unsigned signed return if else for while do switch case break continue goto sizeof namespace using template typename public private protected virtual new delete nullptr true false".split(" "),yaml:"true false null".split(" "),toml:"true false".split(" "),css:"important media supports keyframes from to".split(" "),markdown:"".split(" "),latex:"".split(" "),xml:"".split(" "),ini:"".split(" "),batch:"set if else for do goto call echo rem".split(" ")};
 function highlight(code,lang){
   var out=esc(code);
+  var toks=[];
+  function stash(html){toks.push(html);return "\u0002"+(toks.length-1)+"\u0002"}
+  function outside(fn){
+    return out.split(/(\u0002\d+\u0002)/).map(function(seg,i){return i%2?seg:fn(seg)}).join("");
+  }
   var cmt=null;
   if(lang==="python"||lang==="bash"||lang==="powershell"||lang==="yaml"||lang==="toml"||lang==="ini")cmt=/(#[^\n]*)/g;
   else if(lang==="sql")cmt=/(--[^\n]*)/g;
   else if(lang==="batch")cmt=/(^\s*rem\s[^\n]*|::[^\n]*)/gim;
   else cmt=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/g;
-  var toks=[];
-  function stash(html){toks.push(html);return "\u0002"+(toks.length-1)+"\u0002"}
   out=out.replace(/(&quot;|&#39;|`)(?:\\.|(?!\1)[\s\S])*?\1/g,function(m){return stash('<span class="tk-str">'+m+"</span>")});
   if(cmt)out=out.replace(cmt,function(m){return stash('<span class="tk-com">'+m+"</span>")});
-  out=out.replace(/\b\d+(\.\d+)?\b/g,'<span class="tk-num">$&</span>');
+  out=outside(function(seg){return seg.replace(/\b\d+(\.\d+)?\b/g,function(m){return stash('<span class="tk-num">'+m+"</span>")})});
   var kw=KEYWORDS[lang];
   if(kw&&kw.length){
     var set={};kw.forEach(function(k){set[k]=1});
-    out=out.replace(/[A-Za-z_$][\w$]*/g,function(w){return set[w]?'<span class="tk-key">'+w+"</span>":w});
+    out=outside(function(seg){return seg.replace(/[A-Za-z_$][\w$]*/g,function(w){return set[w]?stash('<span class="tk-key">'+w+"</span>"):w})});
   }
   out=out.replace(/\u0002(\d+)\u0002/g,function(m,i){return toks[+i]});
   return out;
@@ -1099,7 +1111,11 @@ renderers.attachment=function(b,host){
     card.appendChild(ah);
     var ab=el("div","ab");
     if(k==="image"){
-      if(s&&s.kind==="html")ab.innerHTML=s.html;
+      if(s&&s.kind==="html"){
+        ab.innerHTML=s.html;
+        ab.style.cursor="zoom-in";
+        ab.addEventListener("click",function(){openLightbox(s.html,a.name||"",true)});
+      }
       else if(url){var im=el("img");im.loading="lazy";im.src=url;im.alt=a.name||"";
         im.addEventListener("click",function(){openLightbox(url,a.name||"")});
         ab.appendChild(im)}
@@ -1236,10 +1252,24 @@ function toast(msg){
   var t=$("toast");t.textContent=msg;t.classList.add("on");
   clearTimeout(t.__tm);t.__tm=setTimeout(function(){t.classList.remove("on")},2100);
 }
-function openLightbox(src,cap){
-  $("lbImg").src=src;$("lbCap").textContent=cap||"";$("lightbox").classList.add("on");
+function openLightbox(src,cap,isHtml){
+  var lb=$("lightbox"),img=$("lbImg");
+  var old=lb.querySelector(".lb-body");if(old)old.parentNode.removeChild(old);
+  if(isHtml){
+    img.style.display="none";img.removeAttribute("src");
+    var d=el("div","lb-body");d.innerHTML=src;
+    lb.insertBefore(d,img);
+  }else{
+    img.style.display="";img.src=src;
+  }
+  $("lbCap").textContent=cap?cap+"　·　点击任意处关闭":"点击任意处关闭";
+  lb.classList.add("on");
 }
-$("lightbox").addEventListener("click",function(){$("lightbox").classList.remove("on");$("lbImg").src=""});
+$("lightbox").addEventListener("click",function(){
+  var lb=$("lightbox");lb.classList.remove("on");
+  $("lbImg").src="";
+  var old=lb.querySelector(".lb-body");if(old)old.parentNode.removeChild(old);
+});
 
 function finishOverlay(kind,payload){
   state.submitted=true;
