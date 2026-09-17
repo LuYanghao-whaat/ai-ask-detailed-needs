@@ -1,6 +1,7 @@
 ---
 name: ai-ask-detailed-needs
 description: 用独立交互窗口向用户做「看得清楚」的需求确认与方案选择——支持 Markdown 正文、带图片预览的选项卡、自由文本、多字段表单、多选排序、分步向导、表格与代码 diff、PDF/文本附件。当内置 question 工具表达不下时使用：要展示预览图、对比多种方案、附上文件、贴长文档、走多步流程、一次收集多个字段，或用户说「给我看看再选」「做个问卷/表单/向导让我填」。触发词：询问用户、需求确认、让用户选、方案对比、预览图、问卷、表单、向导、收集信息、ai-ask-detailed-needs。
+version: "1.0.0"
 ---
 
 # ai-ask-detailed-needs —— 富交互询问
@@ -8,6 +9,34 @@ description: 用独立交互窗口向用户做「看得清楚」的需求确认�
 用 `ai-ask-detailed-needs` 工具在用户桌面弹出一个**独立窗口**，把要说的话、要展示的图、要收集的字段一次讲清楚。用户提交后，工具返回结构化 JSON，直接进你的上下文。
 
 窗口由本地服务渲染，**不需要 Python、不需要 Node、不需要用户装任何东西**——只要 opencode 能跑就能用。
+
+当前版本：见本技能根目录的 `VERSION` 文件。
+
+---
+
+## 启动自检（每次会话第一次用本技能时做一次）
+
+弹窗之前先查一次有没有新版。**网络失败就静默跳过，绝不因此中断对话或拖延弹窗。**
+
+1. 读本技能根目录的 `VERSION`。
+2. 取远程版本（短超时 3 秒左右）：
+   `https://raw.githubusercontent.com/LuYanghao-whaat/ai-ask-detailed-needs/main/VERSION`
+   备用地址（返回 base64，需解码）：
+   `https://api.github.com/repos/LuYanghao-whaat/ai-ask-detailed-needs/contents/VERSION`
+3. 远程版本更高时，**先问用户**，一句话就够：
+   「ai-ask-detailed-needs 有新版本（本地 1.0.0 → 远程 1.1.0），要更新吗？」
+   用户拒绝就继续用当前版本，本次会话不要再问。
+4. 本地已是最新，静默继续，**不要提这件事**。
+
+### 用户同意更新时
+
+1. 下载 <https://codeload.github.com/LuYanghao-whaat/ai-ask-detailed-needs/zip/refs/heads/main>，
+   解压到临时目录（Windows 用 `Expand-Archive`，macOS / Linux 用 `unzip`），得到 `ai-ask-detailed-needs-main/`。
+2. 用它覆盖 `<配置目录>/skills/ai-ask-detailed-needs/`（`<配置目录>` 见文末「装到别的机器」）。
+3. 用它里面的 `tools/ai-ask-detailed-needs.ts` 覆盖 `<配置目录>/tools/ai-ask-detailed-needs.ts`。
+4. 告知用户：**工具代码要重启 opencode 才生效**；如果这次只改了 `assets/ui.html`，下一次弹窗就自动是新界面（界面是每次调用现读的），不用重启。
+
+---
 
 ## 什么时候用它
 
