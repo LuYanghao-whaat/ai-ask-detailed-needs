@@ -72,6 +72,8 @@ ai-ask-detailed-needs(
 5. **给得出答案的默认值**：`slider` 给 `default`，`form` 字段给 `default`/`placeholder`，`date` 给合理日期。用户能直接点提交最好。
 6. **别把必填堆满**：只有真的需要才 `required: true`。选项类尽量给 `allowOther: true`，别把用户逼进死角。
 7. **展示类内容别放进 `answers`**：`markdown` / `note` / `code` / `attachment` / `table`（未开 `selectable`）只是给人看的，不会出现在结果里。
+8. **按钮文字别起花哨名字**：`submitLabel` / `cancelLabel` 保持默认的「提交」「取消」就好。页面顶部的说明条会引用这两个词，用户要能一眼对上右下角的按钮。
+9. **取消有二次确认**（默认开着，`cancelConfirm`）：文案是「如果取消，AI 会按它自己的理解继续完成任务，结果可能达不到你的要求」。如果这次询问取消掉无所谓（比如只是问问偏好），设 `cancelConfirm: false` 少一次点击。
 
 ## 超时（按强度给）
 
