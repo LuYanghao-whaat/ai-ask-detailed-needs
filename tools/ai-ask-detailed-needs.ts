@@ -222,6 +222,54 @@ function interactiveTypes(b: any): boolean {
   return true
 }
 
+const PROSE_KEYS = new Set([
+  "intro", "title", "subtitle", "prompt", "description", "detail", "summary", "help",
+  "placeholder", "otherLabel", "otherPlaceholder", "hintText", "label", "badge",
+  "caption", "alt", "message", "content",
+])
+
+function fixEscapedNewlines(s: string): string {
+  return s.replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n").replace(/\\t/g, "\t")
+}
+
+function normalizeText(spec: Record<string, any>, warnings: string[]) {
+  let fixed = 0
+  const walk = (node: any, parentType: string) => {
+    if (Array.isArray(node)) {
+      for (const v of node) walk(v, parentType)
+      return
+    }
+    if (!node || typeof node !== "object") return
+    const t = typeof node.type === "string" ? node.type : parentType
+    for (const k of Object.keys(node)) {
+      const v = node[k]
+      if (typeof v === "string") {
+        if (!PROSE_KEYS.has(k)) continue
+        if ((t === "code" || t === "attachment") && k === "content") {
+          if (!v.includes("\n") && /\\n/.test(v)) {
+            node[k] = fixEscapedNewlines(v)
+            fixed++
+          }
+          continue
+        }
+        const nv = fixEscapedNewlines(v)
+        if (nv !== v) {
+          node[k] = nv
+          fixed++
+        }
+      } else {
+        walk(v, t)
+      }
+    }
+  }
+  walk(spec, "")
+  if (fixed) {
+    warnings.push(
+      `检测到 ${fixed} 处把换行写成了字面量 "\\n"（双转义），已自动还原成真正的换行。下次在 JSON 字符串里直接写真正的换行即可。`,
+    )
+  }
+}
+
 function normalizeSpec(spec: Record<string, any>): string[] {
   const warnings: string[] = []
   let n = 0
@@ -686,6 +734,7 @@ export default tool({
     }
     if (Array.isArray(spec.blocks) && Array.isArray(spec.steps)) delete spec.blocks
     const warnings = normalizeSpec(spec)
+    normalizeText(spec, warnings)
     const result = await runAsk(spec, { directory: context?.directory })
     if (warnings.length) result.warnings = warnings
     return JSON.stringify(result, null, 2)
