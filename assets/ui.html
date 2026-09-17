@@ -1353,7 +1353,7 @@ function renderHowto(force){
   var d=el("div","howto");
   d.appendChild(el("div","hi","👋"));
   var t=el("div","ht");
-  t.appendChild(el("h3",null,"这是 AI 在向你提问，不是弹窗广告"));
+  t.appendChild(el("h3",null,"AI 想要问你一些问题，来更好地了解你的需求"));
   var p1=el("p");
   p1.innerHTML=n
     ?("下面一共有 <b>"+n+"</b> 个问题，编号 <b>Q1</b>"+(n>1?"–<b>Q"+n+"</b>":"")+"，按顺序答就行。")
@@ -1362,7 +1362,7 @@ function renderHowto(force){
   var p2=el("p");
   p2.innerHTML="答完点右下角的「<b>"+esc(SPEC.submitLabel||"提交")+"</b>」；不想答就点「"+esc(SPEC.cancelLabel||"取消")+"」。";
   t.appendChild(p2);
-  t.appendChild(el("p",null,"内容只在这台电脑上处理，不会上传到任何地方。"));
+  t.appendChild(el("p",null,"内容只在这台电脑上本地处理，可以放心作答。"));
   d.appendChild(t);
   var x=el("button","hx","✕");
   x.title="知道了，不再显示";
