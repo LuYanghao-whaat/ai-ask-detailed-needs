@@ -1,6 +1,6 @@
 # ai-ask-detailed-needs
 
-[![Version](https://img.shields.io/badge/version-1.0.1-brightgreen.svg)](VERSION)
+[![Version](https://img.shields.io/badge/version-1.0.2-brightgreen.svg)](VERSION)
 
 > **Give your AI a real window to ask you things.**
 > An [opencode](https://opencode.ai) skill + custom tool that replaces the plain question box with a rich, local, zero-dependency interaction window — Markdown, image previews, option cards, forms, drag-to-rank, wizards, tables, code diffs and file previews. The user's answers come back as structured JSON.
