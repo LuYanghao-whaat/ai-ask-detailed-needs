@@ -60,7 +60,7 @@ if [ "$REPO_ROOT" = "$SKILL_TARGET" ]; then
 else
   rm -rf "$SKILL_TARGET"
   mkdir -p "$SKILL_TARGET"
-  for item in SKILL.md assets references README.md LICENSE; do
+  for item in SKILL.md VERSION assets references README.md LICENSE; do
     [ -e "$REPO_ROOT/$item" ] && cp -R "$REPO_ROOT/$item" "$SKILL_TARGET/"
   done
   echo "[+] skill installed: $SKILL_TARGET"
