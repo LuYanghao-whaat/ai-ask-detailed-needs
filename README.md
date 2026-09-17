@@ -232,6 +232,8 @@ ai-ask-detailed-needs(
 
 `status` 有四种：`submitted` / `cancelled` / `timeout` / `error`。超时不会丢数据 —— 用户已填的部分会放在 `partial` 里。
 
+交互块漏写 `id` 也不会丢答案：工具会自动命名成 `q1` / `q2`（和界面上的 Q1 / Q2 对应），并在 `warnings` 里提醒 AI。
+
 ## 工作原理
 
 ```
