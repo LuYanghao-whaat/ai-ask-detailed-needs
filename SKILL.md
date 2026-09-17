@@ -108,6 +108,7 @@ ai-ask-detailed-needs(
 - `status: "cancelled"` → 用户主动取消。问清原因，别立刻重开。
 - `status: "timeout"` → 看 `partial` 和 `hint`。
 - `status: "error"` → 看 `message`；如果是窗口没弹出来，把 `url` 给用户让他手动打开。
+- `warnings` → 只在 spec 有问题时出现（比如交互块漏写 `id`，工具替你补成了 `q1`）。下次注意。
 
 ## 自检与调试
 
