@@ -14,6 +14,7 @@ type AskResult = {
   unanswered: string[]
   elapsedMs: number
   idleTimedOut: boolean
+  warnings?: string[]
   message?: string
   url?: string
   hint?: string
@@ -214,15 +215,39 @@ function parseMaybeJson(v: unknown): unknown {
   }
 }
 
+function interactiveTypes(b: any): boolean {
+  if (!b || typeof b !== "object") return false
+  if (!["choice", "text", "form", "ranking", "slider", "table"].includes(b.type)) return false
+  if (b.type === "table" && (!b.selectable || b.selectable === "none")) return false
+  return true
+}
+
+function normalizeSpec(spec: Record<string, any>): string[] {
+  const warnings: string[] = []
+  let n = 0
+  const walk = (blocks: any[]) => {
+    for (const b of blocks || []) {
+      if (!interactiveTypes(b)) continue
+      n++
+      if (b.id == null || b.id === "") {
+        b.id = "q" + n
+        warnings.push(
+          `第 ${n} 个需要回答的块没有 id，已自动命名为 "${b.id}"（就是界面上的 Q${n}）。建议下次给交互块写上有意义的 id。`,
+        )
+      }
+    }
+  }
+  if (Array.isArray(spec.steps)) for (const s of spec.steps) walk(s?.blocks)
+  else walk(spec.blocks)
+  return warnings
+}
+
 function interactiveIds(spec: Record<string, any>): string[] {
   const ids: string[] = []
   const walk = (blocks: any[]) => {
     for (const b of blocks || []) {
-      if (!b || typeof b !== "object") continue
-      if (!b.id) continue
-      if (!["choice", "text", "form", "ranking", "slider", "table"].includes(b.type)) continue
-      if (b.type === "table" && (!b.selectable || b.selectable === "none")) continue
-      ids.push(String(b.id))
+      if (!interactiveTypes(b)) continue
+      if (b.id) ids.push(String(b.id))
     }
   }
   if (Array.isArray(spec.steps)) for (const s of spec.steps) walk(s?.blocks)
@@ -660,7 +685,9 @@ export default tool({
       )
     }
     if (Array.isArray(spec.blocks) && Array.isArray(spec.steps)) delete spec.blocks
+    const warnings = normalizeSpec(spec)
     const result = await runAsk(spec, { directory: context?.directory })
+    if (warnings.length) result.warnings = warnings
     return JSON.stringify(result, null, 2)
   },
 })
