@@ -17,6 +17,7 @@
 | `cancelLabel` | string | 取消按钮文字，默认「取消」 |
 | `nextLabel` / `prevLabel` | string | 向导按钮文字 |
 | `allowCancel` | boolean | 默认 `true`；`false` 时不显示取消 |
+| `cancelConfirm` | boolean \| string | 默认 `true`：点「取消」时先弹确认框（防误触）。`false` 直接取消；传字符串可自定义提示文字 |
 | `howto` | boolean | 默认 `true`：页面顶部显示「这是 AI 在向你提问」的说明条。用户点 ✕ 关掉后会记住（localStorage），以后不再出现；设 `false` 则从不显示 |
 | `theme` | `"auto"\|"light"\|"dark"` | 默认 `auto`（跟随系统） |
 | `wide` | boolean | 用更宽的三栏布局，适合多图并排 |
