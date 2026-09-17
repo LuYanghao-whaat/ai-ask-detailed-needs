@@ -85,7 +85,7 @@ if ($same) {
     Remove-Item -LiteralPath $SkillTarget -Recurse -Force
   }
   New-Item -ItemType Directory -Force -Path $SkillTarget | Out-Null
-  foreach ($item in @("SKILL.md", "assets", "references", "README.md", "LICENSE")) {
+  foreach ($item in @("SKILL.md", "VERSION", "assets", "references", "README.md", "LICENSE")) {
     $src = Join-Path $RepoRoot $item
     if (Test-Path -LiteralPath $src) {
       Copy-Item -LiteralPath $src -Destination $SkillTarget -Recurse -Force
