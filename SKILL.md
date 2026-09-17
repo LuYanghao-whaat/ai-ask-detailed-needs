@@ -1,7 +1,7 @@
 ---
 name: ai-ask-detailed-needs
 description: 用独立交互窗口向用户做「看得清楚」的需求确认与方案选择——支持 Markdown 正文、带图片预览的选项卡、自由文本、多字段表单、多选排序、分步向导、表格与代码 diff、PDF/文本附件。当内置 question 工具表达不下时使用：要展示预览图、对比多种方案、附上文件、贴长文档、走多步流程、一次收集多个字段，或用户说「给我看看再选」「做个问卷/表单/向导让我填」。触发词：询问用户、需求确认、让用户选、方案对比、预览图、问卷、表单、向导、收集信息、ai-ask-detailed-needs。
-version: "1.0.1"
+version: "1.0.2"
 ---
 
 # ai-ask-detailed-needs —— 富交互询问
@@ -24,7 +24,7 @@ version: "1.0.1"
    备用地址（返回 base64，需解码）：
    `https://api.github.com/repos/LuYanghao-whaat/ai-ask-detailed-needs/contents/VERSION`
 3. 远程版本更高时，**先问用户**，一句话就够：
-   「ai-ask-detailed-needs 有新版本（本地 1.0.1 → 远程 1.1.0），要更新吗？」
+   「ai-ask-detailed-needs 有新版本（本地 1.0.2 → 远程 1.1.0），要更新吗？」
    用户拒绝就继续用当前版本，本次会话不要再问。
 4. 本地已是最新，静默继续，**不要提这件事**。
 
