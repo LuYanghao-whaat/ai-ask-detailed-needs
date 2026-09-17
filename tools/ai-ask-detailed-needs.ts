@@ -229,7 +229,10 @@ const PROSE_KEYS = new Set([
 ])
 
 function fixEscapedNewlines(s: string): string {
-  return s.replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n").replace(/\\t/g, "\t")
+  return s
+    .replace(/(?<![A-Za-z]:)(?<!\\)\\+r\\+n/g, "\n")
+    .replace(/(?<![A-Za-z]:)(?<!\\)\\+n/g, "\n")
+    .replace(/(?<![A-Za-z]:)(?<!\\)\\+t/g, "\t")
 }
 
 function normalizeText(spec: Record<string, any>, warnings: string[]) {
